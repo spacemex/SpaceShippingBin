@@ -1,0 +1,12 @@
+{
+	"parent": "minecraft:block/cube",
+	"textures": {
+		"down": "spaceshippingbin:block/shipping_bin_bottom",
+		"up": "spaceshippingbin:block/shipping_bin_lid",
+		"east": "spaceshippingbin:block/shipping_bin_side",
+		"west": "spaceshippingbin:block/shipping_bin_side",
+		"north": "spaceshippingbin:block/shipping_bin_side",
+		"south": "spaceshippingbin:block/shipping_bin_side",
+		"particle": "spaceshippingbin:block/shipping_bin_lid"
+	}
+}

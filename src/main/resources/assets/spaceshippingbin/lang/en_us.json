@@ -1,0 +1,14 @@
+{
+  "item.spaceshippingbin.check": "Check",
+  "item.spaceshippingbin.copper_coin": "Copper Coin",
+  "item.spaceshippingbin.iron_coin": "Iron Coin",
+  "item.spaceshippingbin.gold_coin": "Gold Coin",
+  "item.spaceshippingbin.netherite_coin": "Nehterite Coin",
+  "item.spaceshippingbin.diamond_coin": "Diamond Coin",
+  "item.spaceshippingbin.faced_copper_coin": "Stamped Copper Coin",
+  "item.spaceshippingbin.faced_iron_coin": "Stamped Iron Coin",
+  "item.spaceshippingbin.faced_gold_coin": "Stamped Gold Coin",
+  "item.spaceshippingbin.faced_netherite_coin": "Stamped Netherite Coin",
+  "item.spaceshippingbin.faced_diamond_coin": "Stamped Diamond Coin",
+  "block.spaceshippingbin.shipping_bin": "Shipping Bin"
+}

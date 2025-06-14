@@ -22,7 +22,7 @@ public class ShippingRegistry {
     private static final List<SellableEntry> ENTRIES = new ArrayList<>();
 
     public static void loadFromFile(Path configDir){
-        Path file = configDir.resolve("ShippingBin/SellableItems.json");
+        Path file = configDir.resolve("ShippingBin/SellablesItems.json");
         try {
             if (!Files.exists(file)) {
                 Files.createDirectories(file.getParent());

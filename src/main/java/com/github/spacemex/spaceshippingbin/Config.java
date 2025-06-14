@@ -23,6 +23,8 @@ public class Config {
     static final ForgeConfigSpec SPEC;
 
     static {
+        BUILDER.comment("My Sellables Config Builder: https://spacemex.github.io/SpaceShopConfigurator/");
+        BUILDER.comment("Find The Sellables.json In `ShippingBin/Sellables.json");
         BUILDER.push("Economy Config");
         CURRENCY_SYMBOL = BUILDER.comment("Currency Symbol").define("Currency Symbol", "$");
 

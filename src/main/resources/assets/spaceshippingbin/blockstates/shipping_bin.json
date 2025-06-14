@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "spaceshippingbin:block/shipping_bin" }
+  }
+}

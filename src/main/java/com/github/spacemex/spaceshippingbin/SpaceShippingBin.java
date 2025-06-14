@@ -62,30 +62,38 @@ public class SpaceShippingBin {
 
     public static double startingBalance = 0;
     public static final List<RegistryObject<Item>> coins = new ArrayList<>();
-
     public static final String MODID = "spaceshippingbin";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final Capability<ICurrency> BALANCE_CAP = CapabilityManager.get(new CapabilityToken<>() {});
-
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, MODID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES,MODID);
-    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES,MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, MODID);
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MODID);
 
+    public static final Capability<ICurrency> BALANCE_CAP = CapabilityManager.get(new CapabilityToken<>() {
+    });
 
-    public static final RegistryObject<Block> SHIPPING_BIN = BLOCKS.register("shipping_bin", BaseShippingBin::new);
+    public static final RegistryObject<Block> SHIPPING_BIN;
+    public static final RegistryObject<Item> SHIPPING_BIN_ITEM;
+    public static final RegistryObject<BlockEntityType<BaseShippingBinEntity>> SHIPPING_BIN_ENTITY;
 
-    public static final RegistryObject<Item> SHIPPING_BIN_ITEM = ITEMS.register("shipping_bin", ()->
-            new BlockItem(SHIPPING_BIN.get(),new Item.Properties()));
-    public static final RegistryObject<Item> CHECK = ITEMS.register("check",()->
-            new CheckItem(new Item.Properties()));
-
-    public static final RegistryObject<BlockEntityType<BaseShippingBinEntity>> SHIPPING_BIN_ENTITY = BLOCK_ENTITIES.register("shipping_bin",()->
-            BlockEntityType.Builder.of(BaseShippingBinEntity::new,SHIPPING_BIN.get()).build(null));
+    public static final RegistryObject<Item> CHECK;
+    public static final RegistryObject<Item> FACED_COPPER_COIN;
+    public static final RegistryObject<Item> FACED_IRON_COIN;
+    public static final RegistryObject<Item> FACED_GOLD_COIN;
+    public static final RegistryObject<Item> FACED_DIAMOND_COIN;
+    public static final RegistryObject<Item> FACED_NETHERITE_COIN;
+    
+    /*
+    public static final RegistryObject<Item> COPPER_COIN;
+    public static final RegistryObject<Item> IRON_COIN;
+    public static final RegistryObject<Item> GOLD_COIN;
+    public static final RegistryObject<Item> DIAMOND_COIN;
+    public static final RegistryObject<Item> NETHERITE_COIN;
+     */
 
     public static final RegistryObject<MenuType<ShippingBinMenu>> SHIPPING_BIN_MENU =
-            MENUS.register("shipping_bin", ()-> IForgeMenuType.create((windowId, inv, data) -> {
+            MENUS.register("shipping_bin", () -> IForgeMenuType.create((windowId, inv, data) -> {
                 BlockPos pos = data.readBlockPos();
                 Level level = inv.player.level();
                 BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -95,11 +103,6 @@ public class SpaceShippingBin {
                 throw new IllegalStateException("No Container found at " + pos);
             }));
 
-    private static RegistryObject<Item> registerCoin(String name, double value) {
-        RegistryObject<Item> item = ITEMS.register(name, () -> new CoinItem( new Item.Properties(),value));
-        coins.add(item);
-        return item;
-    }
     public SpaceShippingBin(FMLJavaModLoadingContext context) {
         IEventBus modEventBus = context.getModEventBus();
 
@@ -116,20 +119,19 @@ public class SpaceShippingBin {
         modEventBus.addListener(this::commonSetup);
 
 
-
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
         startingBalance = Config.STARTING_CURRENCY.get();
 
-        event.enqueueWork(()-> ShippingRegistry.loadFromFile(FMLPaths.CONFIGDIR.get()));
+        event.enqueueWork(() -> ShippingRegistry.loadFromFile(FMLPaths.CONFIGDIR.get()));
 
+        if (coins.isEmpty()) return;
         coins.forEach(coin -> {
             Supplier<Item> itemSupplier = coin.get().asItem().getDefaultInstance().getItemHolder();
             CoinParser.registerCoins(itemSupplier);
         });
-
     }
 
     private void attachCapabilities(AttachCapabilitiesEvent<Entity> event) {
@@ -149,9 +151,9 @@ public class SpaceShippingBin {
     }
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
-    public static class renderEvent{
+    public static class renderEvent {
         @SubscribeEvent
-        public static void  onRenderOverlay(RenderGuiOverlayEvent.Post event) {
+        public static void onRenderOverlay(RenderGuiOverlayEvent.Post event) {
             Minecraft mc = Minecraft.getInstance();
             if (mc.player == null) return;
             if (!Config.ENABLE_VIRTUAL_ECONOMY.get() || !Config.ENABLE_HUD_OVERLAY.get()) return;
@@ -164,9 +166,10 @@ public class SpaceShippingBin {
             int X = Config.HUD_OVERLAY_X.get();
             int Y = Config.HUD_OVERLAY_Y.get();
 
-            graphics.drawString(mc.font,balanceString,X,Y, DisplayColorCode);
+            graphics.drawString(mc.font, balanceString, X, Y, DisplayColorCode);
 
         }
+
     }
 
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -185,5 +188,33 @@ public class SpaceShippingBin {
                 }
             });
         }
+
+    }
+    static {
+        SHIPPING_BIN = BLOCKS.register("shipping_bin", BaseShippingBin::new);
+        SHIPPING_BIN_ITEM = ITEMS.register("shipping_bin", ()-> new BlockItem(SHIPPING_BIN.get(),new Item.Properties()));
+        SHIPPING_BIN_ENTITY = BLOCK_ENTITIES.register("shipping_bin",()-> BlockEntityType.Builder.of(BaseShippingBinEntity::new,SHIPPING_BIN.get()).build(null));
+
+        CHECK = ITEMS.register("check",()-> new CheckItem(new Item.Properties()));
+        
+        /* Working On finding out how to balance the economy
+        COPPER_COIN = registerCoin("copper_coin",1);
+        IRON_COIN = registerCoin("iron_coin",8);
+        GOLD_COIN = registerCoin("gold_coin",16);
+        DIAMOND_COIN = registerCoin("diamond_coin",512);
+        NETHERITE_COIN = registerCoin("netherite_coin",4096);
+         */
+        
+        FACED_COPPER_COIN = registerCoin("faced_copper_coin",1);
+        FACED_IRON_COIN = registerCoin("faced_iron_coin",8);
+        FACED_GOLD_COIN = registerCoin("faced_gold_coin",16);
+        FACED_DIAMOND_COIN = registerCoin("faced_diamond_coin",512);
+        FACED_NETHERITE_COIN = registerCoin("faced_netherite_coin",4096);
+    }
+
+    private static RegistryObject<Item> registerCoin(String name, double value) {
+        RegistryObject<Item> item = ITEMS.register(name, () -> new CoinItem( new Item.Properties(),value));
+        coins.add(item);
+        return item;
     }
 }
